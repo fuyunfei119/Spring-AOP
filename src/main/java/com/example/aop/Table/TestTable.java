@@ -1,15 +1,18 @@
 package com.example.aop.Table;
 
+import com.example.aop.Annotation.Entity;
 import com.example.aop.Annotation.OnValidate;
-import lombok.Data;
+import com.example.aop.Annotation.TableNameConstants;
 import lombok.experimental.FieldNameConstants;
-import org.springframework.validation.annotation.Validated;
+
 
 @FieldNameConstants(asEnum = true)
+@TableNameConstants
+@Entity
 public class TestTable {
 
     private String CustomerNo;
-    @OnValidate(Value = "CheckValidateAddress")
+    @OnValidate(Value = "CheckIfAddressIsIIegel")
     private String Address;
     private String PhoneNo;
 }
