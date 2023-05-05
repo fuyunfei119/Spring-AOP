@@ -3,6 +3,7 @@ package com.example.aop.Table;
 import com.example.aop.Annotation.Entity;
 import com.example.aop.Annotation.OnValidate;
 import com.example.aop.Annotation.TableNameConstants;
+import com.example.aop.System.TriggerType;
 import lombok.experimental.FieldNameConstants;
 
 
@@ -12,7 +13,7 @@ import lombok.experimental.FieldNameConstants;
 public class TestTable {
 
     private String CustomerNo;
-    @OnValidate(Value = "CheckIfAddressIsIIegel")
+    @OnValidate(Value = TriggerType.CheckIfAddressIsIIegel)
     private String Address;
     private String PhoneNo;
 }

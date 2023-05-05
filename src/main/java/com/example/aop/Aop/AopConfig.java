@@ -59,7 +59,7 @@ public class AopConfig {
 
         if (field.isAnnotationPresent(OnValidate.class)) {
             OnValidate annotation = field.getAnnotation(OnValidate.class);
-            String value = annotation.Value();
+            String value = annotation.Value().name();
 
             System.out.println(value);
 

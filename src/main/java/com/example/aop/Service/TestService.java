@@ -25,12 +25,6 @@ public class TestService {
     }
 
     public void aopTest() {
-//        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(TriggerScan.class);
-//
-//        String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();
-//
-//        Arrays.stream(beanDefinitionNames).forEach(System.out::println);
-
         ApplicationContext applicationContext1 = new AnnotationConfigApplicationContext(EntityScan.class);
 
         String[] beanDefinitionNames1 = applicationContext1.getBeanDefinitionNames();
