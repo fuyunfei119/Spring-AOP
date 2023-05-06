@@ -1,5 +1,7 @@
 package com.example.aop.Annotation;
 
+import com.example.aop.System.SystemTriggerType;
+
 import java.lang.annotation.*;
 
 @Documented
@@ -8,4 +10,6 @@ import java.lang.annotation.*;
 public @interface Trigger {
 
      String MethodName() default "";
+
+     SystemTriggerType RaisedFor();
 }

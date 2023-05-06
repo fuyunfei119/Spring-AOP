@@ -18,4 +18,7 @@ public class TestController {
 
     @GetMapping("/test")
     public void Test2() { testService.aopTest1(); }
+
+    @GetMapping("/trigger")
+    public void Test3() { testService.aopTest2(); }
 }

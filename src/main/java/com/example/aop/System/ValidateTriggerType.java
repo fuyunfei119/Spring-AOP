@@ -1,5 +1,5 @@
 package com.example.aop.System;
 
-public enum TriggerType {
+public enum ValidateTriggerType {
 	CheckIfAddressIsIIegel,
 }

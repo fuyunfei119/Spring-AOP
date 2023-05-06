@@ -1,6 +1,6 @@
 package com.example.aop.Annotation;
 
-import com.example.aop.System.TriggerType;
+import com.example.aop.System.ValidateTriggerType;
 
 import java.lang.annotation.*;
 
@@ -9,5 +9,5 @@ import java.lang.annotation.*;
 @Target(ElementType.FIELD)
 public @interface OnValidate {
 
-    TriggerType Value();
+    ValidateTriggerType Value();
 }

@@ -17,11 +17,12 @@ public class TestService {
 
     private final TestRecord<TestTable.Fields> testRecord;
     private final TestRecord<TestTable.Fields> testRecord2;
+    private final TestRecord<TestTable.Fields> testRecord3;
 
-    @Autowired
-    public TestService(TestRecord<TestTable.Fields> testRecord, TestRecord<TestTable.Fields> testRecord2) {
+    public TestService(TestRecord<TestTable.Fields> testRecord, TestRecord<TestTable.Fields> testRecord2, TestRecord<TestTable.Fields> testRecord3) {
         this.testRecord = testRecord;
         this.testRecord2 = testRecord2;
+        this.testRecord3 = testRecord3;
     }
 
     public void aopTest() {
@@ -42,5 +43,13 @@ public class TestService {
                 .FindSet()
                 .Validate(TestTable.Fields.Address,"China")
                 .Modify();
+    }
+
+    public void aopTest2() {
+        testRecord3
+                .Init()
+                .Insert()
+                .Modify()
+                .Delete();
     }
 }

@@ -1,6 +1,6 @@
 package com.example.aop.Annotation;
 
-import org.springframework.core.annotation.AliasFor;
+import com.example.aop.System.ModifyTriggerType;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.*;
@@ -9,10 +9,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Component
-public @interface FieldTrigger {
+public @interface OnModify {
 
-    @AliasFor(annotation = Component.class)
-    String value() default "";
-
-    Class<?> tablename();
+    ModifyTriggerType value();
 }

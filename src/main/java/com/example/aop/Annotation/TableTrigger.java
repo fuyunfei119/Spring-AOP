@@ -19,5 +19,7 @@ public @interface TableTrigger {
     @AliasFor(annotation = Component.class)
     String value() default "";
 
+    Class<?> CLASS();
+
 
 }

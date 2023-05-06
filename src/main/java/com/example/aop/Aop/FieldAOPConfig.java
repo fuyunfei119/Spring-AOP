@@ -3,7 +3,6 @@ package com.example.aop.Aop;
 import com.example.aop.Annotation.FieldTrigger;
 import com.example.aop.Annotation.OnValidate;
 import com.example.aop.Annotation.Trigger;
-import com.example.aop.Config.EntityScan;
 import com.example.aop.Config.TriggerScan;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
@@ -19,7 +18,7 @@ import java.util.Collection;
 
 @Component
 @Aspect
-public class AopConfig {
+public class FieldAOPConfig {
 
     @Pointcut("execution(* com.example.aop.Record.TestRecord+.Validate(..))")
     public void OnValidate() {}
@@ -87,7 +86,6 @@ public class AopConfig {
 
                     if (found) break;
                 }
-
             }
         }
 
