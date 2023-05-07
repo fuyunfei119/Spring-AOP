@@ -15,14 +15,16 @@ import java.lang.reflect.InvocationTargetException;
 @Service
 public class TestService {
 
-    @Autowired
-    private TestRecord<TestTable.Fields> testRecord;
-    @Autowired
-    private TestRecord<TestTable.Fields> testRecord3;
-    @Autowired
-    private TestRecord<TestTable.Fields> testRecord2;
+    private final TestRecord<TestTable.Fields> testRecord;
+    private final TestRecord<TestTable.Fields> testRecord3;
+    private final TestRecord<TestTable.Fields> testRecord2;
 
-
+    @Autowired
+    public TestService(TestRecord<TestTable.Fields> testRecord, TestRecord<TestTable.Fields> testRecord3, TestRecord<TestTable.Fields> testRecord2) {
+        this.testRecord = testRecord;
+        this.testRecord3 = testRecord3;
+        this.testRecord2 = testRecord2;
+    }
 
     public void aopTest() {
         ApplicationContext applicationContext1 = new AnnotationConfigApplicationContext(EntityScan.class);
@@ -41,6 +43,8 @@ public class TestService {
     }
 
     public void appTest3() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        testRecord2
+                .Modify();
     }
 
     public void aopTest2() {

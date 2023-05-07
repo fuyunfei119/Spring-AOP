@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.lang.reflect.InvocationTargetException;
+
 @RestController
 public class TestController {
 
@@ -21,4 +23,7 @@ public class TestController {
 
     @GetMapping("/trigger")
     public void Test3() { testService.aopTest2(); }
+
+    @GetMapping("/trigger2")
+    public void Test4() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException { testService.appTest3(); }
 }
