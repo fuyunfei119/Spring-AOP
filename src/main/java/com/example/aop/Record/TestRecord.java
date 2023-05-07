@@ -33,8 +33,9 @@ public class TestRecord<E> {
     }
 
     public TestRecord<E> GetClassType() { return this; }
+    public TestRecord<E> Init() { Init(false); return this; };
 
-    public TestRecord<E> Init() { return this; };
+    public TestRecord<E> Init(Boolean UserTrigger) { return this; };
 
     public TestRecord<E> Validate(E field, String newValue) { return this; };
 
@@ -46,10 +47,13 @@ public class TestRecord<E> {
 
     public TestRecord<E> FindSet() { return this; };
 
-    public TestRecord<E> Modify() { return this; };
+    public TestRecord<E> Modify() { Modify(false); return this; };
+    public TestRecord<E> Modify(Boolean UserTrigger) { return this; };
 
-    public TestRecord<E> Delete() { return this; };
+    public TestRecord<E> Delete() { Delete(false); return this; };
+    public TestRecord<E> Delete(Boolean UserTrigger) { return this; };
 
-    public TestRecord<E> Insert() { return this; };
+    public TestRecord<E> Insert() { Insert(false); return this; };
+    public TestRecord<E> Insert(Boolean UserTrigger) { return this; };
 
 }

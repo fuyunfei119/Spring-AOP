@@ -1,9 +1,7 @@
 package com.example.aop.Aop;
 
 import com.example.aop.Annotation.*;
-import com.example.aop.Config.FieldTriggerScan;
 import com.example.aop.Config.TableTriggerScan;
-import com.example.aop.System.SystemTriggerType;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -12,7 +10,6 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.*;
 import java.util.Arrays;
@@ -24,18 +21,41 @@ import java.util.Objects;
 @Aspect
 public class TableAOPConfig {
 
-    @Pointcut("execution(* com.example.aop.Record.TestRecord+.Modify(..)) || execution(* com.example.aop.Record.TestRecord*.Insert(..))")
+    /**
+     * <p>
+     * This pointcut expression matches any method that is either a Modify, Insert, Delete or Init method of the TestRecord class
+     * or any of its subclasses.
+     * <p>
+     * This is intended to be used for triggering table events when the data in the table is modified or manipulated in any way.
+     */
+//    @Pointcut("execution(* com.example.aop.Record.TestRecord+.Modify(..)) " +
+//            "|| execution(* com.example.aop.Record.TestRecord*.Insert(..)) " +
+//            "|| execution(* com.example.aop.Record.TestRecord*.Delete(..)) " +
+//            "|| execution(* com.example.aop.Record.TestRecord*.Init(..))")
+//    public void OnTriggerTableEvent() {
+//    }
+
+    @Pointcut("execution(* com.example.aop.Record.TestRecord+.Modify(..,Boolean)) && args(Boolean) " +
+            "|| execution(* com.example.aop.Record.TestRecord*.Insert(..,Boolean)) " +
+            "|| execution(* com.example.aop.Record.TestRecord*.Delete(..,Boolean)) " +
+            "|| execution(* com.example.aop.Record.TestRecord*.Init(..,Boolean))")
     public void OnTriggerTableEvent() {
     }
 
+    /**
+     *
+     * @param pjp
+     * @return
+     * @throws Throwable
+     */
     @Around("OnTriggerTableEvent()")
     public Object OnDoTest(ProceedingJoinPoint pjp) throws Throwable {
+
+        System.out.println(Arrays.toString(pjp.getArgs()));
 
         if (!Objects.equals(pjp.getKind(), JoinPoint.METHOD_EXECUTION)) return pjp.proceed();
 
         Class<?> table = GetClass(pjp);
-
-        System.out.println(pjp.getSignature().getName());
 
         switch (pjp.getSignature().getName()) {
             case "Insert" -> HandleInsertTrigger(table);
@@ -44,10 +64,20 @@ public class TableAOPConfig {
             case "Init" -> HandleInitTrigger(table);
         }
 
-
         return pjp.proceed();
     }
 
+    /**
+     * This method retrieves the Class object of the target object's "aClass" field from the ProceedingJoinPoint
+     * And use Class.forName() method to obtain the corresponding Class object..
+     * <P>
+     * @param pjp pjp the ProceedingJoinPoint that contains information about the intercepted method.
+     * @return the Class object corresponding to the "aClass" field of the target object.
+     * @throws NoSuchMethodException if the "getaClass" method cannot be found in the target object's class.
+     * @throws ClassNotFoundException if the specified class cannot be found.
+     * @throws InvocationTargetException if the "getaClass" method cannot be invoked on the target object.
+     * @throws IllegalAccessException if the "getaClass" method cannot be accessed due to insufficient permissions.
+     */
     private Class<?> GetClass(ProceedingJoinPoint pjp) throws NoSuchMethodException, ClassNotFoundException, InvocationTargetException, IllegalAccessException {
 
         Object aClass = pjp.getTarget().getClass().getDeclaredMethod("getaClass").invoke(pjp.getTarget());
@@ -68,7 +98,7 @@ public class TableAOPConfig {
 
         String methodName = OnInsert.value().name();
 
-        InvokeTriggerMethod(methodName);
+        InvokeTriggerMethod(methodName,table);
 
     }
 
@@ -82,7 +112,7 @@ public class TableAOPConfig {
 
         String methodName = onModify.value().name();
 
-        InvokeTriggerMethod(methodName);
+        InvokeTriggerMethod(methodName,table);
 
     }
 
@@ -96,7 +126,7 @@ public class TableAOPConfig {
 
         String methodName = OnDelete.value().name();
 
-        InvokeTriggerMethod(methodName);
+        InvokeTriggerMethod(methodName,table);
     }
 
     private void HandleInitTrigger(Class<?> table) {
@@ -109,34 +139,18 @@ public class TableAOPConfig {
 
         String methodName = OnInit.value().name();
 
-        InvokeTriggerMethod(methodName);
+        InvokeTriggerMethod(methodName,table);
 
     }
 
-    private void InvokeTriggerMethod(String methodName) {
+    private void InvokeTriggerMethod(String methodName,Class<?> table) {
 
         ApplicationContext applicationContext = new AnnotationConfigApplicationContext(TableTriggerScan.class);
 
         Collection<Object> beans = applicationContext.getBeansWithAnnotation(TableTrigger.class).values();
 
-        boolean found = false;
+        TriggerUtils.InvokeTableMethod(methodName,beans,table);
 
-        for (Object bean : beans) {
-
-            Method[] methods = ReflectionUtils.getDeclaredMethods(bean.getClass());
-
-            for (Method method : methods) {
-
-                if (!method.isAnnotationPresent(Trigger.class)) continue;
-
-                if (method.isAnnotationPresent(Trigger.class) && method.getName().equals(methodName)) {
-                    ReflectionUtils.invokeMethod(method, bean);
-                    found = true;
-                    break;
-                }
-            }
-
-            if (found) break;
-        }
     }
+
 }

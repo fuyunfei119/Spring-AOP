@@ -4,8 +4,10 @@ import com.example.aop.Annotation.TableTrigger;
 import com.example.aop.Annotation.Trigger;
 import com.example.aop.System.SystemTriggerType;
 import com.example.aop.Table.TestTable;
+import org.springframework.core.annotation.Order;
 
 @TableTrigger(CLASS = TestTable.class)
+@Order(2)
 public class TestTableTrigger {
 
     @Trigger(RaisedFor = SystemTriggerType.Insert)

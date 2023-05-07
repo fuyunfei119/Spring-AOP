@@ -34,25 +34,27 @@ public class TestService {
 
     public void aopTest1() {
         testRecord
+                .SetSource(TestTable.class)
                 .SetLoadFields()
                 .SetRange()
                 .SetFilter()
                 .FindSet()
                 .Validate(TestTable.Fields.Address,"China")
-                .Modify();
+                .Modify(true);
     }
 
     public void appTest3() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         testRecord2
+                .SetSource(TestTable.class)
                 .Modify();
     }
 
     public void aopTest2() {
         testRecord3
                 .SetSource(TestTable.class)
-                .Init()
-                .Insert()
-                .Modify()
-                .Delete();
+                .Init(true)
+                .Insert(true)
+                .Modify(true)
+                .Delete(true);
     }
 }
