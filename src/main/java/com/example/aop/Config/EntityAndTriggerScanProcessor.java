@@ -115,16 +115,16 @@ public class EntityAndTriggerScanProcessor implements BeanFactoryPostProcessor {
 
     private void CreateSystemEnumType(String enumName) throws IOException {
         File directory = new File("src/main/java/"+this.rootPackagePathWithSlash +"/System");
-        System.out.println(directory);
+
         if (!directory.exists()) {
-            System.out.println(directory.mkdirs());
+            directory.mkdirs();
         }
         File file = new File(directory, enumName + ".java");
         if (file.exists()) {
-            System.out.println(file.delete());
+            file.delete();
         }
 
-        System.out.println(file.createNewFile());
+        file.createNewFile();
 
         PrintWriter writer = new PrintWriter(new FileWriter(file));
 

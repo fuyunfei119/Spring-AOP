@@ -3,7 +3,7 @@ package com.example.aop.Aop;
 import com.example.aop.Annotation.FieldTrigger;
 import com.example.aop.Annotation.OnValidate;
 import com.example.aop.Annotation.Trigger;
-import com.example.aop.Config.TriggerScan;
+import com.example.aop.Config.FieldTriggerScan;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.context.ApplicationContext;
@@ -63,7 +63,7 @@ public class FieldAOPConfig {
             System.out.println(value);
 
             if (!value.isEmpty()) {
-                ApplicationContext applicationContext = new AnnotationConfigApplicationContext(TriggerScan.class);
+                ApplicationContext applicationContext = new AnnotationConfigApplicationContext(FieldTriggerScan.class);
 
                 Collection<Object> beans = applicationContext.getBeansWithAnnotation(FieldTrigger.class).values();
 

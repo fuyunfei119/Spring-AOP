@@ -1,40 +1,38 @@
 package com.example.aop.Record;
 
-import org.apache.tomcat.util.net.jsse.JSSEUtil;
+import com.example.aop.Table.TestTable;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Arrays;
-
 @Repository
 @Scope("prototype")
-public class TestRecord<E extends Enum<E>> {
+public class TestRecord<E> {
 
-    private Class<E> aClass;
+    private String UUID;
+    private Class<?> aClass;
+
+    public String getUUID() {
+        return UUID;
+    }
+
+    public void setUUID(String UUID) {
+        this.UUID = UUID;
+    }
+
+    public Class<?> getaClass() {
+        return aClass;
+    }
 
     public TestRecord() {
-//        System.out.println("========================");
-//        System.out.println(this);
-//        System.out.println(this.getClass());
-//        System.out.println(this.getClass().getTypeName());
-//        System.out.println(Arrays.toString(this.getClass().getTypeParameters()));
-//        System.out.println("========================");
-
-        Type type = getClass().getGenericSuperclass();
-        if (type instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) type;
-            Type[] typeArguments = parameterizedType.getActualTypeArguments();
-            if (typeArguments != null && typeArguments.length > 0) {
-                Type typeArgument = typeArguments[0];
-                if (typeArgument instanceof Class) {
-                    aClass = (Class<E>) typeArgument;
-                    System.out.println("this type is ....."+aClass);
-                }
-            }
-        }
+        this.UUID = java.util.UUID.randomUUID().toString();
     }
+
+    public <T> TestRecord<E> SetSource(Class<T> aClass) {
+        this.aClass = aClass;
+        return this;
+    }
+
+    public TestRecord<E> GetClassType() { return this; }
 
     public TestRecord<E> Init() { return this; };
 

@@ -1,30 +1,28 @@
 package com.example.aop.Aop;
 
-import com.example.aop.Annotation.FieldTrigger;
-import com.example.aop.Annotation.OnValidate;
-import com.example.aop.Annotation.Trigger;
-import com.example.aop.Config.TriggerScan;
+import com.example.aop.Annotation.*;
+import com.example.aop.Config.FieldTriggerScan;
+import com.example.aop.Config.TableTriggerScan;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.cglib.core.TypeUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.*;
-import java.util.Arrays;
 import java.util.Collection;
+
 
 @Component
 @Aspect
 public class TableAOPConfig {
 
     @Pointcut("execution(* com.example.aop.Record.TestRecord+.Modify(..))")
-    public void OnTriggerTableEvent() {}
+    public void OnTriggerTableEvent() {
+    }
 
 //    @Before("OnValidate()")
 //    public void OnBoforeBeforeValidate(JoinPoint joinPoint) {
@@ -40,100 +38,48 @@ public class TableAOPConfig {
     @Around("OnTriggerTableEvent()")
     public Object OnDoTest(ProceedingJoinPoint pjp) throws Throwable {
 
-        System.out.println(pjp.getSignature().getDeclaringType());
-        for (TypeVariable typeParameter : pjp.getSignature().getDeclaringType().getTypeParameters()) {
-            System.out.println(typeParameter);
+        Object aClass = pjp.getTarget().getClass().getDeclaredMethod("getaClass").invoke(pjp.getTarget());
 
-            System.out.println(Arrays.toString(typeParameter.getBounds()));
+        String classPath = aClass.toString().replace("class ", "");
 
-            for (Type bound : typeParameter.getBounds()) {
-                System.out.println(bound);
-                System.out.println(bound.getTypeName());
-                System.out.println(TypeUtils.getType(bound.getTypeName()));
-            }
+        Class<?> table = Class.forName(classPath);
 
-//            TypeUtils.getClassName(typeParameter.getBounds())
+        System.out.println(table);
 
-            System.out.println();
-        }
+        if (table.isAnnotationPresent(OnModify.class)) {
+            OnModify declaredAnnotation = table.getDeclaredAnnotation(OnModify.class);
+            if (declaredAnnotation != null) {
+                if (declaredAnnotation.value() != null) {
 
+                    String methodName = declaredAnnotation.value().name();
 
+                    ApplicationContext applicationContext = new AnnotationConfigApplicationContext(TableTriggerScan.class);
 
-        Object arg = pjp.getArgs()[0];
+                    Collection<Object> beans = applicationContext.getBeansWithAnnotation(TableTrigger.class).values();
 
-//        System.out.println(arg.getClass().getName());
-//        System.out.println(arg.getClass().getSimpleName());
-//        System.out.println(Arrays.toString(arg.getClass().getTypeParameters()));
-//        System.out.println(arg.getClass().getTypeName());
-//        System.out.println(arg.getClass().getCanonicalName());
-//        System.out.println(arg.getClass().getModule());
-//        System.out.println(arg.getClass().getPackageName());
-//        System.out.println(arg.getClass().getPackage());
+                    boolean found = false;
 
-        String classpath = arg.getClass().getName().replace("$Fields", "");
+                    for (Object bean : beans) {
 
-        Class<?> aClass = Class.forName(classpath);
+                        Method[] methods = ReflectionUtils.getDeclaredMethods(bean.getClass());
 
-        System.out.println(aClass);
+                        for (Method method : methods) {
 
-        Field field = aClass.getDeclaredField(arg.toString());
+                            if (!method.isAnnotationPresent(Trigger.class)) continue;
 
-        if (field.isAnnotationPresent(OnValidate.class)) {
-            OnValidate annotation = field.getAnnotation(OnValidate.class);
-            String value = annotation.Value().name();
-
-            System.out.println(value);
-
-            if (!value.isEmpty()) {
-                ApplicationContext applicationContext = new AnnotationConfigApplicationContext(TriggerScan.class);
-
-                Collection<Object> beans = applicationContext.getBeansWithAnnotation(FieldTrigger.class).values();
-
-                boolean found = false;
-
-                for (Object bean : beans) {
-
-                    Method[] methods = ReflectionUtils.getDeclaredMethods(bean.getClass());
-
-                    for (Method method : methods) {
-
-                        if (!method.isAnnotationPresent(Trigger.class)) continue;
-
-                        if (method.isAnnotationPresent(Trigger.class) && method.getName().equals(value)) {
-                            ReflectionUtils.invokeMethod(method, bean);
-                            found = true;
-                            break;
+                            if (method.isAnnotationPresent(Trigger.class) && method.getName().equals(methodName)) {
+                                ReflectionUtils.invokeMethod(method, bean);
+                                found = true;
+                                break;
+                            }
                         }
-                    }
 
-                    if (found) break;
+                        if (found) break;
+                    }
                 }
             }
         }
 
-        Arrays.stream(pjp.getArgs()).forEach(o -> {
-//            System.out.println(o);
-//            System.out.println(o.getClass().getName());
-//
-//            String classpath = o.getClass().getName().replace("$Fields", "");
-//            System.out.println(classpath);
-//            try {
-//                Class<?> aClass = Class.forName(classpath);
-//                Field field = aClass.getDeclaredField(o.toString());
-//                if (field.isAnnotationPresent(OnValidate.class)) {
-//                    System.out.println("should be triggered.");
-//                }
-//            } catch (ClassNotFoundException | NoSuchFieldException e) {
-//                throw new RuntimeException(e);
-//            }
-//
-//
-//            System.out.println(o.getClass().getSimpleName());
-//            System.out.println(o.getClass().getGenericSuperclass().getTypeName());
-        });
-
-        Object proceed = pjp.proceed();
-
-        return proceed;
+        return pjp.proceed();
     }
 }
